@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Citations</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background-color: #ff4444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e0e0e0;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 3px;
+        }
+
+        .custom-philosopher {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-philosopher.visible {
+            display: block;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginForm" class="login-container">
+        <h2>Connexion Administrateur</h2>
+        <form onsubmit="login(event)">
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe:</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Se connecter</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" style="display: none;">
+        <div class="header">
+            <h1>Administration des Citations</h1>
+            <button onclick="logout()" class="logout-btn">Déconnexion</button>
+        </div>
+
+        <form id="quoteForm">
+            <div class="form-group">
+                <label>Citation:</label>
+                <textarea id="text" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Auteur:</label>
+                <input type="text" id="author" required>
+            </div>
+
+            <div class="form-group">
+                <label>Philosophe:</label>
+                <select id="philosopher" onchange="toggleCustomPhilosopher()" required>
+                    <option value="autre">Wharton</option>
+                    <option value="autre">Spinoza</option>
+                    <option value="autre">Eshyle</option>
+                    <option value="socrate">Socrate</option>
+                    <option value="platon">Platon</option>
+                    <option value="aristote">Aristote</option>
+                    <option value="epicure">Épicure</option>
+                    <option value="augustin">Saint Augustin</option>
+                    <option value="aquin">Thomas d'Aquin</option>
+                    <option value="descartes">Descartes</option>
+                    <option value="pascal">Pascal</option>
+                    <option value="kant">Kant</option>
+                    <option value="nietzsche">Nietzsche</option>
+                    <option value="sartre">Sartre</option>
+                    <option value="camus">Camus</option>
+                    <option value="einstein">Einstein</option>
+                    <option value="autre">Autre</option>
+                </select>
+                <div id="customPhilosopher" class="custom-philosopher">
+                    <label>Nom du philosophe:</label>
+                    <input type="text" id="customPhilosopherName">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Période:</label>
+                <select id="period" required>
+                    <option value="Antiquité">Antiquité</option>
+                    <option value="Moyen Âge">Moyen Âge</option>
+                    <option value="Modernes">Modernes</option>
+                    <option value="Contemporains">Contemporains</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>URL de l'image:</label>
+                <input type="text" id="imageUrl">
+            </div>
+
+            <div class="form-group">
+                <label>Tags (séparés par des virgules):</label>
+                <input type="text" id="tags">
+            </div>
+
+            <button type="submit">Ajouter la citation</button>
+        </form>
+
+        <h2>Citations existantes</h2>
+        <table id="quotesTable">
+            <thead>
+                <tr>
+                    <th>Citation</th>
+                    <th>Auteur</th>
+                    <th>Période</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgOeOc2NE9iIhR_Lizrnb24bIGeZdntiQ",
+            authDomain: "tracker-c11f1.firebaseapp.com",
+            projectId: "tracker-c11f1",
+            storageBucket: "tracker-c11f1.firebasestorage.app",
+            messagingSenderId: "133343616801",
+            appId: "1:133343616801:web:d25a892e898f241b932860",
+            measurementId: "G-9HY71VTP84"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Auth state observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadQuotes();
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+        });
+
+        // Login function
+        function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => {
+                    alert('Erreur de connexion: ' + error.message);
+                });
+        }
+
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.reload();
+            }).catch((error) => {
+                alert('Erreur de déconnexion: ' + error.message);
+            });
+        }
+
+        // Toggle custom philosopher input
+        function toggleCustomPhilosopher() {
+            const select = document.getElementById('philosopher');
+            const customDiv = document.getElementById('customPhilosopher');
+            if (select.value === 'autre') {
+                customDiv.classList.add('visible');
+                document.getElementById('customPhilosopherName').required = true;
+            } else {
+                customDiv.classList.remove('visible');
+                document.getElementById('customPhilosopherName').required = false;
+            }
+        }
+
+        // Load quotes
+        function loadQuotes() {
+            db.collection('quotes').get().then((snapshot) => {
+                const tbody = document.querySelector('#quotesTable tbody');
+                tbody.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const quote = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${quote.text}</td>
+                        <td>${quote.author}</td>
+                        <td>${quote.period}</td>
+                        <td>
+                            <button onclick="deleteQuote('${doc.id}')" style="background-color: #ff4444;">
+                                Supprimer
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }).catch((error) => {
+                console.error("Erreur lors du chargement des citations:", error);
+            });
+        }
+
+        // Add quote form handler
+        document.getElementById('quoteForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let philosopherValue = document.getElementById('philosopher').value;
+            if (philosopherValue === 'autre') {
+                philosopherValue = document.getElementById('customPhilosopherName').value;
+            }
+            
+            const quote = {
+                text: document.getElementById('text').value,
+                author: document.getElementById('author').value,
+                philosopher: philosopherValue,
+                period: document.getElementById('period').value,
+                imageUrl: document.getElementById('imageUrl').value,
+                tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                timestamp: new Date()
+            };
+
+            db.collection('quotes').add(quote)
+                .then(() => {
+                    alert('Citation ajoutée!');
+                    document.getElementById('quoteForm').reset();
+                    document.getElementById('customPhilosopher').classList.remove('visible');
+                    loadQuotes();
+                })
+                .catch((error) => {
+                    alert('Erreur: ' + error.message);
+                });
+        });
+
+        // Delete quote function
+        function deleteQuote(id) {
+            if (confirm('Voulez-vous vraiment supprimer cette citation?')) {
+                db.collection('quotes').doc(id).delete()
+                    .then(() => {
+                        alert('Citation supprimée!');
+                        loadQuotes();
+                    })
+                    .catch((error) => {
+                        alert('Erreur: ' + error.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

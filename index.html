@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque de Sagesse Philosophique</title>
+    <!-- styles -->
+     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+
+</head>
+<body>
+    <!-- Menu Toggle Button (Mobile) -->
+    <button class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <img src="Mouad.png" alt="Logo" class="sidebar-logo">
+            <h2>Individu et Communauté</h2>
+            <p>Sagesse Philosophique</p>
+            <p> <p style="color: blue;">Admin?</p> cliquer<button class="admin-button"><a href="admin.html" style="text-decoration: none;">ici</a></button></p>
+        </div>
+
+        <div class="sidebar-search">
+            <input type="text" class="search-input" 
+                   placeholder="Rechercher une citation...">
+        </div>
+
+        <!-- Menu Sections -->
+        <div class="menu-sections">
+            <!-- Antiquité -->
+            <div class="menu-section">
+                <div class="menu-title">Antiquité</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-philosopher="socrate">
+                        <i class="fas fa-user-circle"></i> Socrate
+                    </li>
+                    <li class="menu-item" data-philosopher="platon">
+                        <i class="fas fa-user-circle"></i> Platon
+                    </li>
+                    <li class="menu-item" data-philosopher="aristote">
+                        <i class="fas fa-user-circle"></i> Aristote
+                    </li>
+                    <li class="menu-item" data-philosopher="epicure">
+                        <i class="fas fa-user-circle"></i> Épicure
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Moyen Âge -->
+            <div class="menu-section">
+                <div class="menu-title">Moyen Âge</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-philosopher="augustin">
+                        <i class="fas fa-user-circle"></i> Saint Augustin
+                    </li>
+                    <li class="menu-item" data-philosopher="aquin">
+                        <i class="fas fa-user-circle"></i> Thomas d'Aquin
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Modernes -->
+            <div class="menu-section">
+                <div class="menu-title">Modernes</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-philosopher="descartes">
+                        <i class="fas fa-user-circle"></i> Descartes
+                    </li>
+                    <li class="menu-item" data-philosopher="pascal">
+                        <i class="fas fa-user-circle"></i> Pascal
+                    </li>
+                    <li class="menu-item" data-philosopher="spinoza">
+                        <i class="fas fa-user-circle"></i> Spinoza
+                    </li>
+                    <li class="menu-item" data-philosopher="kant">
+                        <i class="fas fa-user-circle"></i> Kant
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Contemporains -->
+            <div class="menu-section">
+                <div class="menu-title">Contemporains</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-philosopher="nietzsche">
+                        <i class="fas fa-user-circle"></i> Nietzsche
+                    </li>
+                    <li class="menu-item" data-philosopher="sartre">
+                        <i class="fas fa-user-circle"></i> Sartre
+                    </li>
+                    <li class="menu-item" data-philosopher="camus">
+                        <i class="fas fa-user-circle"></i> Camus
+                    </li>
+                    <li class="menu-item" data-philosopher="einstein">
+                        <i class="fas fa-user-circle"></i> Einstein
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Ouevres -->
+            <div class="menu-section">
+                <div class="menu-title">Ouevres</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-philosopher="Edith-Wharton">
+                        <i class="fas fa-user-circle"></i> Wharton
+                    </li>
+                    <li class="menu-item" data-philosopher="sartre">
+                        <i class="fas fa-user-circle"></i> Spinoza
+                    </li>
+                    <li class="menu-item" data-philosopher="Eshyle">
+                        <i class="fas fa-user-circle"></i> Eschyle
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Thèmes -->
+            <div class="menu-section">
+                <div class="menu-title">Thèmes /encore en développement/</div>
+                <ul class="menu-items">
+                    <li class="menu-item" data-theme="individu">
+                        <i class="fas fa-user"></i> L'Individu
+                    </li>
+                    <li class="menu-item" data-theme="societe">
+                        <i class="fas fa-users"></i> La Communauté
+                    </li>
+                    <li class="menu-item" data-theme="liberte">
+                        <i class="fas fa-dove"></i> La droit naturel
+                    </li>
+                    <li class="menu-item" data-theme="connaissance">
+                        <i class="fas fa-brain"></i> Les normes sociaux 
+                    </li>
+                    <li class="menu-item" data-theme="morale">
+                        <i class="fas fa-balance-scale"></i> équilibre entre Ind/Com
+                    </li>
+                    <li class="menu-item" data-theme="bonheur">
+                        <i class="fas fa-smile"></i> Individu/Communauté (obstacles)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>Bibliothèque de Sagesse Philosophique</h1>
+            <p>Explorez les pensées des plus grands philosophes à travers l'histoire sur l'individu et la Communauté</p>
+            <br>
+
+            <p style="color:#3498db;">Pour demander l'accès administrateur et pouvoir écrire ou supprimer des citations, contactez cet email :</p>
+            <a href="mailto:elalaouimouad92@gmail.com" class="admin-link">
+                <i class="fas fa-envelope"></i> Contactez-nous
+            </a>
+
+
+            <div class="filter-tags">
+                <span class="filter-tag active">Tous</span>
+                <span class="filter-tag">Antiquité</span>
+                <span class="filter-tag">Moyen Âge</span>
+                <span class="filter-tag">Modernes</span>
+                <span class="filter-tag">Contemporains</span>
+            </div>
+        </div>
+
+        <div id="quotesContainer" class="quotes-grid"><!--A completer-->
+            <!-- Les citations seront générées ici dynamiquement -->
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+    </div>
+
+    <!-- Scroll Top Button -->
+    <button class="scroll-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgOeOc2NE9iIhR_Lizrnb24bIGeZdntiQ",
+            authDomain: "tracker-c11f1.firebaseapp.com",
+            projectId: "tracker-c11f1",
+            storageBucket: "tracker-c11f1.firebasestorage.app",
+            messagingSenderId: "133343616801",
+            appId: "1:133343616801:web:d25a892e898f241b932860",
+            measurementId: "G-9HY71VTP84"
+        };
+
+        // Initialisation de Firebase
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                app.db = firebase.firestore();
+                return true;
+            } catch (error) {
+                console.error("Erreur d'initialisation Firebase:", error);
+                return false;
+            }
+        }
+
+        // Initialisation
+        function init() {
+            initFirebase();
+            setupEventListeners();
+            loadQuotes();
+        }
+
+        // Démarrage de l'application
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
